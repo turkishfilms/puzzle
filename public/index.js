@@ -31,7 +31,7 @@ const dotsCircle = (n, mixed) => {
     return points
 }
 
-const cc = (m) => {
+const cc = (n) => {
     cdw(n);
     cdwM(n)
 }
@@ -97,7 +97,7 @@ const bucketify = (arr) => {
     const n = Math.log2(arr.length)
     for (let i = 0; i < n; i++) {
         let bucket = []
-        for (let j = i; j < arr.length; j += ny) bucket.push(arr[j])
+        for (let j = i; j < arr.length; j += n) bucket.push(arr[j])
         buckets.push(bucket)
     }
     return buckets
