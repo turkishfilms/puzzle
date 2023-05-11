@@ -1,3 +1,23 @@
+/**
+ * big problem.
+ * solution can be an array of arrays, each with numbers. no numbers may repeat between buckets. 
+ * the numbers must "cover" or be at most one binary bit flip from every possible number up to 2**n for n cells
+ * 
+ * patterns:
+ * the sum of all the numbers in a bucket, is the same sum across all buckets. 0,1,2,3,4 
+ * my flip and constant jump algorithm works for 0,1,2,4 
+ * 0,1,2,4 all have a number of leftover positions after all buckets are minimally filled of 1 or 0
+ * flip and constant jump doesn't work for any n other than 0,1,2,4 below 66
+ * 
+ * number of buckets is equal to n
+ * number of positions covered by a position is equal to n + 1
+ * minimum number of positions needed to cover is equal to ceiling(2**n /(n+1))
+ * 
+ * 
+ * 
+ */
+
+
 let n = 5
 let w, h
 let cols = []
