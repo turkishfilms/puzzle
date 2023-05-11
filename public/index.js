@@ -13,6 +13,8 @@
  * number of positions covered by a position is equal to n + 1
  * minimum number of positions needed to cover is equal to ceiling(2**n /(n+1))
  * 
+ * amount of overlaps come in pairs for small "chains"
+ * 
  * 
  * 
  */
@@ -27,8 +29,7 @@ function setup() {
     h = windowHeight
     createCanvas(w, h)
     background(0)
-    let sol = [0, 0, 0, 0, 0, 0, 0, 0]
-    sol.forEach((sol) => cols.push([random(255), random(255), random(255)]))
+    for(let i = 0; i < n; i++) cols.push([random(255), random(255), random(255)])
     cc(n)
 }
 
@@ -60,6 +61,8 @@ const cdw = (n) => connectDots(dotsCircle(2 ** n, false), dude(n))
 
 const cdwM = (n) => connectDots(dotsCircle(2 ** n, true), dude(n))
 
+const dude = (n) => bucketify(mixArr(makeArr(2 ** n)))
+
 const connectDots = (points, sol) => {
 
     for (let i = 0; i < sol.length; i++) {
@@ -77,8 +80,6 @@ const connectDots = (points, sol) => {
     }
 }
 
-
-
 function keyPressed() {
     background(0)
     if (key == "w") cc(n += 1)
@@ -88,8 +89,6 @@ function keyPressed() {
 function draw() {
 
 }
-
-
 
 const mixArr = (arr) => {
     let sectionLen = arr.length / 2
@@ -123,8 +122,6 @@ const bucketify = (arr) => {
     return buckets
 }
 
-const dude = (n) => bucketify(mixArr(makeArr(2 ** n)))
-
 let bAD = (arr, val) => {
     const ind = arr.findIndex(n => n == val)
     if (ind >= 0) arr.splice(ind, 1)
@@ -146,7 +143,6 @@ const ct = (n, bucket) => {
     }
     return targets.length == 0 ? 1 : targets
 }
-
 
 let solt = (n) => {
     const sol = dude(n)
