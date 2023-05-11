@@ -15,8 +15,7 @@
  * 
  * amount of overlaps come in pairs for small "chains"
  * 
- * 
- * 
+ * TODO: Create a fx which generates the new position after doing the mixing without mixing. its too hard with 2**64
  */
 
 
@@ -29,18 +28,18 @@ function setup() {
     h = windowHeight
     createCanvas(w, h)
     background(0)
-    for(let i = 0; i < n; i++) cols.push([random(255), random(255), random(255)])
-    cc(n)
+    for (let i = 0; i < n; i++) cols.push([random(255), random(255), random(255)])
+    drawOrderedAndUnorderedCircles(n)
 }
 
-const dotsCircle = (n, mixed) => {
+const drawCircleWithDots = (n, mixed) => {
     stroke(255)
     if (n <= 0) return "bruh"
     const points = []
     const angle = TWO_PI / n
     const radius = 120
     const offset = 10
-    const inds = mixed ? mixArr(makeArr(n)) : makeArr(n)
+    const inds = mixed ? binaryMixer(makeSequentialArr(n)) : makeSequentialArr(n)
 
     for (let i = 0; i < n; i++) {
         const x = cos(i * angle) * radius + (mixed ? +radius + offset : w - radius - offset)
@@ -52,16 +51,12 @@ const dotsCircle = (n, mixed) => {
     return points
 }
 
-const cc = (n) => {
-    cdw(n);
-    cdwM(n)
+const drawUn_OrderedAndCircles = (n) => {
+    connectDots(drawCircleWithDots(2 ** n, false), originalSolution(n))
+    connectDots(drawCircleWithDots(2 ** n, true), originalSolution(n))
 }
 
-const cdw = (n) => connectDots(dotsCircle(2 ** n, false), dude(n))
-
-const cdwM = (n) => connectDots(dotsCircle(2 ** n, true), dude(n))
-
-const dude = (n) => bucketify(mixArr(makeArr(2 ** n)))
+const originalSolution = (n) => consantLeapBucket(binaryMixer(makeSequentialArr(2 ** n)))
 
 const connectDots = (points, sol) => {
 
@@ -80,17 +75,29 @@ const connectDots = (points, sol) => {
     }
 }
 
+const sumUpBuckets = (sol) => {
+    sol.forEach(bucket => {
+        let tot = 0
+        bucket.forEach(pos => tot += pos)
+        return tot
+    })
+}
+
 function keyPressed() {
     background(0)
-    if (key == "w") cc(n += 1)
-    if (key == "s") cc(n += -1)
+    if (key == "w") drawUn_OrderedAndCircles(n += 1)
+    if (key == "s") drawUn_OrderedAndCircles(n += -1)
+}
+
+const numUnusedPositions = (n) => {
+    return (2 ** n) - ((ceil((2 ** n) / (n + 1))) * n)
 }
 
 function draw() {
 
 }
 
-const mixArr = (arr) => {
+const binaryMixer = (arr) => {
     let sectionLen = arr.length / 2
     let curArr = arr.slice()
     while (sectionLen >= 1) {
@@ -105,13 +112,13 @@ const mixArr = (arr) => {
     return curArr
 }
 
-const makeArr = (n) => {
+const makeSequentialArr = (n) => {
     const arr = []
     for (let i = 0; i < n; i++) arr.push(i)
     return arr
 }
 
-const bucketify = (arr) => {
+const consantLeapBucket = (arr) => {
     const buckets = []
     const n = Math.log2(arr.length)
     for (let i = 0; i < n; i++) {
@@ -122,7 +129,7 @@ const bucketify = (arr) => {
     return buckets
 }
 
-let bAD = (arr, val) => {
+const bAD = (arr, val) => {
     const ind = arr.findIndex(n => n == val)
     if (ind >= 0) arr.splice(ind, 1)
 }
@@ -130,7 +137,7 @@ let bAD = (arr, val) => {
 const ct = (n, bucket) => {
     //add break statement for if there are too many overlaps
     //add break if there are too many targets left over by certain pos
-    const targets = makeArr(2 ** n)
+    const targets = makeSequentialArr(2 ** n)
     for (let i = 0; i < bucket.length; i++) {
         const pos = bucket[i]
         const bPos = toFixedLengthBinary(pos, n)
@@ -144,8 +151,8 @@ const ct = (n, bucket) => {
     return targets.length == 0 ? 1 : targets
 }
 
-let solt = (n) => {
-    const sol = dude(n)
+const solt = (n) => {
+    const sol = originalSolution(n)
     const counters = []
     for (let i = 0; i < sol.length; i++) {
         const b = sol[i]
@@ -157,7 +164,7 @@ let solt = (n) => {
 
 }
 
-function toFixedLengthBinary(number, length) {
+const toFixedLengthBinary = (number, length) => {
     // const binaryString = ; // Convert the number to a binary string
     return number.toString(2).padStart(length, '0'); // Pad the binary string with zeros to achieve the fixed length
 }
